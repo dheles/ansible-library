@@ -1,0 +1,18 @@
+[app]
+app.boxen.dev
+
+[db]
+db.boxen.dev
+
+[solr]
+solr.boxen.dev
+
+[dev:children]
+app
+db
+solr
+
+# not sure these are needed, as these values are already set in .ssh/config
+[dev:vars]
+ansible_ssh_user=deploy
+ansible_ssh_private_key_file=~/.ssh/personal_dev
