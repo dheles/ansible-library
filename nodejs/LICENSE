@@ -1,6 +1,7 @@
 The substantial part of this project
 (playbook.yml, script/nodejs.sh, app/app.js, and app/package.js)
-is from Guy Geerling's Ansible for DevOps and is covered by his license:
+was originally from Guy Geerling's Ansible for DevOps. *I have made modifications*,
+but my understanding is that this work is covered by his MIT license:
 
 Copyright (c) 2014 Jeff Geerling
 

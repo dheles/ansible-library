@@ -20,7 +20,7 @@
       - name: Install EPEL repo
         yum: name=epel-release state=present
 
-      - name: Ensure firewalld is stopped (sisnc ethis is for testing)
+      - name: Ensure firewalld is stopped (since this is for testing)
         service: name=firewalld state=stopped
 
       - name: Install node.js and npm
@@ -34,6 +34,7 @@
 
       - name: Copy example node.js app to the server
         copy: "src=app dest={{ node_apps_location }}"
+        register: node_app
 
       - name: Install app dependencies defined in package.json
         npm: "path={{ node_apps_location }}/app"
@@ -46,3 +47,7 @@
       - name: Start example Node.js app.
         command: "forever start {{ node_apps_location }}/app/app.js"
         when: "forever_list.stdout.find('{{ node_apps_location }}/app/app.js') == -1"
+
+      - name: Restart Node.js app (if it has changed).
+        command: "forever restart {{ node_apps_location }}/app/app.js"
+        when: node_app.changed
