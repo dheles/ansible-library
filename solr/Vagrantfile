@@ -38,6 +38,7 @@ Vagrant.configure(2) do |config|
       host.vm.hostname = "#{short_name}.dev"
       # presumes installation of https://github.com/cogitatio/vagrant-hostsupdater on host
       host.hostsupdater.aliases = ["#{short_name}"]
+      host.ssh.insert_key = false
 
       host.vm.provider "virtualbox" do |vb|
         vb.name = "#{short_name}.dev"

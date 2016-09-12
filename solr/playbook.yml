@@ -8,14 +8,24 @@
     pre_tasks:
       - name: Update apt cache if needed
         apt: update_cache=yes cache_valid_time=3600
+        when: ansible_os_family == "Debian"
 
     handlers:
       - name: restart solr
         service: name=solr state=restarted
 
     tasks:
-      - name: Install Java.
+      - name: Add repository for Debian
+        apt_repository: repo="deb http://http.debian.net/debian {{ ansible_distribution_release }}-backports main" update_cache=yes
+        when: ansible_distribution|lower == "debian"
+
+      - name: Install Java (apt).
         apt: name=openjdk-8-jdk state=present
+        when: ansible_os_family == "Debian"
+
+      - name: Install Java (yum).
+        yum: name=java-1.8.0-openjdk-devel state=present
+        when: ansible_os_family == "RedHat"
 
       - name: Download Solr.
         get_url:
@@ -41,6 +51,13 @@
           -s solr
           -p 8983
           creates={{ solr_dir }}/bin/solr
+        register: solr_install_script_result
+
+      # Workaround for bug https://github.com/ansible/ansible-modules-core/issues/915.
+      - name: Ensure solr is stopped (RHEL 7 workaround).
+        command: service solr stop
+        when: (ansible_os_family == 'RedHat') and (ansible_distribution_version.split(".")[0] == '7') and (solr_install_script_result.changed)
+        failed_when: false
 
       - name: Ensure solr is started and enabled on boot.
         service: name=solr state=started enabled=yes
