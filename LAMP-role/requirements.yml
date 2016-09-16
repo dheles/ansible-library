@@ -1,0 +1,8 @@
+---
+- geerlingguy.mysql
+- geerlingguy.apache
+- geerlingguy.php
+- geerlingguy.php-mysql
+
+# REM: install before using with
+# $ ansible-galaxy install -r requirements.yml
