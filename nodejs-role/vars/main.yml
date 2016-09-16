@@ -1,0 +1,6 @@
+---
+# example npm module include file
+node_npm_modules:
+  - forever
+  - async
+  - request
