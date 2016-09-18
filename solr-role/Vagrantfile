@@ -1,0 +1,74 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require_relative './script/authorize_key'
+
+domain          = "boxen.dev"
+auto_user       = "deploy"
+auto_key        = "~/.ssh/personal_dev.pub"
+
+# NOTE: currently using the same OS for all boxen
+OS="ubuntu" # "debian" || "centos" || "ubuntu"
+
+Vagrant.configure(2) do |config|
+  package=""
+  if OS=="debian"
+    config.vm.box = "debian/jessie64"
+    package="_apt"
+    boot_user="vagrant"
+  elsif OS=="centos"
+    config.vm.box = "centos/7"
+    package="_yum"
+    boot_user="vagrant"
+  elsif OS=="ubuntu"
+    config.vm.box = "geerlingguy/ubuntu1604"
+    # official box does not get along with ansible at all: "ubuntu/xenial64"
+    package="_apt"
+    boot_user="vagrant" # if using ubuntu/xenial64: "ubuntu"
+  else
+    puts "you must set the OS variable to a valid value before continuing"
+    exit
+  end
+
+  {
+    'solr' => '10.11.12.201',
+    #'db'          => '10.11.12.102',
+    #'solr'        => '10.11.12.103'
+  }.each do |short_name, ip|
+    config.vm.define short_name do |host|
+      host.vm.network 'private_network', ip: ip
+      host.vm.hostname = "#{short_name}.#{domain}"
+      # presumes installation of https://github.com/cogitatio/vagrant-hostsupdater on host
+      host.hostsupdater.aliases = ["#{short_name}"]
+      # avoinding "Authentication failure" issue
+      host.ssh.insert_key = true
+      host.vm.synced_folder ".", "/vagrant", disabled: true
+
+      host.vm.provider "virtualbox" do |vb|
+        vb.name = "#{short_name}.#{domain}"
+        vb.memory = 256
+        vb.linked_clone = true
+      end
+
+      # do minimal provisioning (in order to do further work with Ansible)
+      host.vm.provision "prerequisites", type: "shell", path: "script/prereqs#{package}.sh"
+
+      # add authorized key to user created by the prereqs script
+      authorize_key host, boot_user, auto_user, auto_key
+    end
+  end
+
+  # include a playbook in provisioning
+  # vm (re)defined here must match a shortname above
+  config.vm.define "solr" do |app|
+    app.vm.provision "ansible" do |ansible|
+      ansible.galaxy_role_file = "requirements.yml"
+      # ansible.verbose = "v"
+      ansible.playbook = "playbook.yml"
+    end
+  end
+
+  # REM:
+  # test: ansible all -m ping
+  # run playbooks post-provisioning: ansible-playbook playbook.yml -i hosts
+end

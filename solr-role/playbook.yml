@@ -1,0 +1,19 @@
+---
+- hosts: all
+  become: yes
+
+  # gather_facts: False
+  #
+  # vars_files:
+  #   - "{{ ansible_distribution|lower }}.yml"
+  #
+  # pre_tasks:
+  #   - raw: test -e /usr/bin/python || (apt -y update && apt install -y python2 python-simplejson)
+  #   - setup:
+  #   # - include: ubuntu_setup.yml
+  #   #   when: ansible_distribution|lower == "ubuntu"
+
+  roles:
+    - geerlingguy.java
+    - geerlingguy.tomcat6
+    - geerlingguy.solr

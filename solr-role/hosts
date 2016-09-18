@@ -1,0 +1,5 @@
+[dev:children]
+app
+
+[app]
+solr.boxen.dev

@@ -1,0 +1,4 @@
+- name: bootstrap python 2
+  gather_facts: no
+  tasks:
+  - raw: sudo apt-get update -qq && sudo apt-get install -qq python2.7
