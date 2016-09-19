@@ -1,0 +1,6 @@
+---
+- include: playbooks/selinux/main.yml
+- include: playbooks/varnish/main.yml
+- include: playbooks/www/main.yml
+- include: playbooks/db/main.yml
+- include: playbooks/memcached/main.yml

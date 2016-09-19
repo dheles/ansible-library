@@ -1,0 +1,16 @@
+---
+- hosts: all
+  become: yes
+
+  tasks:
+    - name: determine whether selinux is enabled
+      command: selinuxenabled
+      register: selinux_enabled
+      changed_when: False
+    - name: install selinux python bindings, if selinux is enabled
+      yum:
+        name: libselinux-python
+        state: installed
+      when: "selinux_enabled.rc == 0"
+    - name: disable selinux (to avoid issues i cannot presently fix)
+      selinux: state=disabled
