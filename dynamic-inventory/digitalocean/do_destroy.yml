@@ -1,0 +1,21 @@
+---
+# unfortunately, have to paste in the droplet id(s) below for this to work
+# TODO: find a way to get them dynamically from elsewhere
+# TODO: see if DO tags might be used:
+# https://www.digitalocean.com/community/tutorials/how-to-use-droplet-tagging-with-the-digitalocean-api
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: destroy specified droplets
+      digital_ocean:
+        state: deleted
+        command: droplet
+        id: "{{ item.id }}"
+        # no error, but doesn't work:
+        #  name: "{{ item.name }}"
+      register: do
+      with_items:
+        - id: 26771758
+          name: ansible-test
