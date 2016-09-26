@@ -1,2 +1,3 @@
 ---
 - include: playbooks/elk/main.yml
+- include: playbooks/web/main.yml

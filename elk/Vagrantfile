@@ -6,6 +6,7 @@ require_relative './script/authorize_key'
 domain          = "boxen.dev"
 auto_user       = "deploy"
 auto_key        = "~/.ssh/personal_dev.pub"
+setup_complete  = false
 
 # NOTE: currently using the same OS for all boxen
 OS="centos" # "debian" || "centos"
@@ -51,19 +52,18 @@ Vagrant.configure(2) do |config|
 
       # add authorized key to user created by the prereqs script
       authorize_key host, auto_user, auto_key
+
+      if short_name == "webs" # last in the list
+        setup_complete = true
+      end
+
+      if setup_complete
+        host.vm.provision "ansible" do |ansible|
+          ansible.galaxy_role_file = "requirements.yml"
+          ansible.playbook = "main.yml"
+        end
+      end
+
     end
   end
-
-  # include a playbook in provisioning
-  # vm (re)defined here must match a shortname above
-  config.vm.define "logs" do |logs|
-    logs.vm.provision "ansible" do |ansible|
-      ansible.galaxy_role_file = "requirements.yml"
-      ansible.playbook = "main.yml"
-    end
-  end
-
-  # REM:
-  # test: ansible all -m ping
-  # run playbooks post-provisioning: ansible-playbook playbook.yml -i hosts
 end

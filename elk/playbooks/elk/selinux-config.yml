@@ -22,11 +22,19 @@
   - name: check SELinux status
     setup: filter=ansible_selinux
 
+    # TODO: add detection to avoid running unnecessarily
   - name: configure SELinux for kibana root
     shell: semanage fcontext -a -t httpd_sys_content_t "{{ kibana_root }}(/.*)?" && restorecon -Rv "{{ kibana_root }}"
 
-  - name: configure SELinux for kibana port
-    shell: semanage port -a -t http_port_t -p tcp 9200
+  - name: check SELinux kibana port status
+    shell: semanage port -l | grep 9200
+    register: kibana_port_listed
+    changed_when: false
 
+  - name: configure SELinux for kibana port, if not already done
+    shell: semanage port -a -t http_port_t -p tcp 9200
+    when: "kibana_port_listed.rc == 1"
+
+    # TODO: move to handler and run only when needed
   - name: restart nginx
     service: name=nginx state=restarted
