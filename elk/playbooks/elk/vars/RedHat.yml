@@ -1,0 +1,25 @@
+---
+java_packages:
+  - java-1.8.0-openjdk
+
+kibana_server_name: logs
+kibana_username: kibana
+# kibana_password: password ...moved to group_vars
+# copied from kibana role. likely to break when role is updated to kibana 4:
+kibana_root: /var/www/kibana3 
+
+nginx_user: nginx
+nginx_worker_connections: 1024
+nginx_remove_default_vhost: true
+
+logstash_monitor_local_syslog: false
+logstash_ssl_key_file: elk-vagrant-example.key
+logstash_ssl_certificate_file: elk-vagrant-example.crt
+
+logstash_forwarder_logstash_server: logs
+logstash_forwarder_ssl_certificate_file: elk-vagrant-example.crt
+logstash_forwarder_files:
+  - paths:
+      - /var/log/auth.log
+    fields:
+      type: syslog

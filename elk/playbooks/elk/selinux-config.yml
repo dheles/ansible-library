@@ -1,0 +1,32 @@
+---
+# TODO: make conditional, either in whole or in part, based on sestatus
+- hosts: logs
+  become: yes
+
+  vars_files:
+    - [ "vars/{{ ansible_os_family }}.yml", "vars/main.yml" ]
+
+  tasks:
+  - name: install prereqs for SELinux management - RedHat
+    yum: name={{ item }} state=installed
+    when: ansible_os_family == 'RedHat'
+    with_items:
+    - libselinux-python
+    - policycoreutils-python
+
+  # NOTE: untested. need to figure out policycoreutils-python equivalent
+  - name: install prereqs for SELinux management - Debian
+    apt: name=python-selinux  state=installed
+    when: ansible_os_family == 'Debian'
+
+  - name: check SELinux status
+    setup: filter=ansible_selinux
+
+  - name: configure SELinux for kibana root
+    shell: semanage fcontext -a -t httpd_sys_content_t "{{ kibana_root }}(/.*)?" && restorecon -Rv "{{ kibana_root }}"
+
+  - name: configure SELinux for kibana port
+    shell: semanage port -a -t http_port_t -p tcp 9200
+
+  - name: restart nginx
+    service: name=nginx state=restarted

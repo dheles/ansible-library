@@ -1,0 +1,2 @@
+---
+- include: playbooks/elk/main.yml

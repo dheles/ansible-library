@@ -1,0 +1,33 @@
+---
+# Ansible playbook for an ELK (Elasticsearch, Logstash, Kibana) logging server.
+#
+# @author Jeff Geerling (2014).
+
+- hosts: logs
+  gather_facts: yes
+  become: yes
+
+  vars_files:
+    - vars/main.yml
+    - [ "vars/{{ ansible_os_family }}.yml", "vars/main.yml" ]
+
+  pre_tasks:
+    - name: Update apt cache if needed.
+      apt: update_cache=yes cache_valid_time=86400
+      when: ansible_os_family == "Debian"
+
+  roles:
+    # - role: geerlingguy.java
+    #   when: "ansible_os_family == 'RedHat'"
+    #   java_packages:
+    #     - java-1.8.0-openjdk
+    - geerlingguy.java
+    - geerlingguy.repo-epel
+    - geerlingguy.nginx
+    - geerlingguy.elasticsearch
+    - geerlingguy.elasticsearch-curator
+    - geerlingguy.kibana
+    - geerlingguy.logstash
+    - geerlingguy.logstash-forwarder
+
+- include: selinux-config.yml
