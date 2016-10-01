@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+
+  vars_files:
+    - ../inventories/digitalocean/vars.yml
+
+  tasks:
+  - name: Remove droplet
+    digital_ocean:
+      state: absent
+      command: droplet
+      name: "{{ item.name }}"
+      unique_name: yes
+    with_items: "{{ droplets }}"

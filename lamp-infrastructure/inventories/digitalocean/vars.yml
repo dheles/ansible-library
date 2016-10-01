@@ -1,0 +1,7 @@
+droplets:
+  - { name: a4d.lamp.varnish, group: "lamp-varnish" }
+  - { name: a4d.lamp.www.1, group: "lamp-www" }
+  - { name: a4d.lamp.www.2, group: "lamp-www" }
+  - { name: a4d.lamp.db.1, group: "lamp-db" }
+  - { name: a4d.lamp.db.2, group: "lamp-db" }
+  - { name: a4d.lamp.memcached, group: "lamp-memcached" }

@@ -6,7 +6,8 @@
     - name: determine whether selinux is enabled
       command: selinuxenabled
       register: selinux_enabled
-      changed_when: False
+      changed_when: false
+      failed_when: false
     - name: install selinux python bindings, if selinux is enabled
       yum:
         name: libselinux-python
@@ -14,3 +15,4 @@
       when: "selinux_enabled.rc == 0"
     - name: disable selinux (to avoid issues i cannot presently fix)
       selinux: state=disabled
+      when: "selinux_enabled.rc == 0"
