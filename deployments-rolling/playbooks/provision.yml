@@ -1,0 +1,23 @@
+---
+- hosts: nodejs_api
+  become: yes
+
+  vars_files:
+    - vars.yml
+
+  vars:
+    nodejs_npm_global_packages:
+      - name: forever
+    firewall_allowed_tcp_ports:
+      - "22"
+      - "8080"
+
+  tasks:
+    - name: install git
+      apt:
+        name: git
+        state: present
+
+  roles:
+    - geerlingguy.firewall
+    - geerlingguy.nodejs
