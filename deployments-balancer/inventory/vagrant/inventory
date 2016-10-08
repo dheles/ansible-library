@@ -1,0 +1,12 @@
+# dev (vagrant):
+# ------------------
+[app]
+app1.boxen.dev
+app2.boxen.dev
+
+[balancer]
+ball.boxen.dev
+
+[deployments:children]
+app
+balancer

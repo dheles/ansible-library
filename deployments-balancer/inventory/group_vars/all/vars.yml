@@ -1,0 +1,4 @@
+# REM: if you are looking for passwords or other variables
+# that vary from dev to stage to prod, check the other subfolders
+
+variable_that_transcends_environments: "foo"

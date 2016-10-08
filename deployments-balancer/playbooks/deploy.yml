@@ -1,0 +1,36 @@
+---
+- hosts: app
+  become: yes
+  serial: 1
+
+  pre_tasks:
+    - name: Disable the backend server in HAProxy.
+      haproxy:
+        state: disabled
+        host: "{{ ansible_eth1.ipv4.address }}"
+        socket: /var/lib/haproxy/stats
+        backend: habackend
+      delegate_to: "{{ item }}"
+      with_items: "{{ groups.balancer }}"
+
+  tasks:
+    - debug: msg="Deployment would be done here."
+    - name: test by breaking stuff
+      command: /bin/false
+
+  post_tasks:
+    - name: Wait for backend to come back up.
+      wait_for:
+        host: '{{ inventory_hostname }}'
+        port: 80
+        state: started
+        timeout: 60
+
+    - name: Enable the backend server in HAProxy.
+      haproxy:
+        state: enabled
+        host: "{{ ansible_eth1.ipv4.address }}"
+        socket: /var/lib/haproxy/stats
+        backend: habackend
+      delegate_to: "{{ item }}"
+      with_items: "{{ groups.balancer }}"
