@@ -1,0 +1,11 @@
+# dev (vagrant):
+# ------------------
+[app]
+app.boxen.dev
+
+#[db]
+#db.boxen.dev
+
+[dev:children]
+app
+#db

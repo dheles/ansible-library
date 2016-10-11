@@ -1,0 +1,3 @@
+---
+# REM: maunally install before using with
+# $ ansible-galaxy install -r requirements.yml
