@@ -2,6 +2,11 @@
 - name: file manipulation test
   hosts: app
 
+  vars:
+    - theme_name: "Mirage 2"
+    - theme_path: "Mirage2/"
+    - theme_line: "<theme name=\"{{ theme_name }}\" regex=\".*\" path=\"{{ theme_path }}\" />"
+
   tasks:
     # force: yes (default) copies file afresh each time (better for initial tests)
     # force: no only copies file if it doesn't exist (better to test idempotence)
@@ -21,8 +26,9 @@
       lineinfile:
         dest: "~/test_file.conf"
         insertbefore: '(^\s*)(</themes>)'
-        regexp: '(^\s*)(<theme name="Mirage 2")'
-        line: '        <theme name="Mirage 2" regex=".*" path="Mirage2/" />'
+        regexp: "(^\\s*)(<theme name=\"{{ theme_name }}\")"
+        line: "        {{ theme_line }}"
 
     - name: check results
       command: "cat ~/test_file.conf"
+      changed_when: false
